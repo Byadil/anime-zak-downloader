@@ -13,16 +13,20 @@ GitHub rejected workflow dispatch for both repositories with HTTP 422:
 "Actions has been disabled for this user." The account owner must restore Actions
 availability before hosted jobs or validation can run. No hosted run was started.
 
-The existing Worker has ASSETS, DB and DOWNLOADER bindings. It has no MEDIA_BUCKET
-binding and no configured application signing or media-job secrets. The available
+The app was deployed on 2026-10-02 (version b8bf9fa5-2a5c-4829-8d5d-cbf4d36fe914).
+Homepage, JavaScript, public catalog, database, owner login and admin authorization
+passed live smoke tests. ASSETS, DB and DOWNLOADER are bound; JWT_SECRET and
+MEDIA_JOB_SECRET are configured. The schema migrations are applied. There is no
+MEDIA_BUCKET binding, and DOWNLOAD_ENABLED remains false. The
 Cloudflare API returns HTTP 403, code 10042: "Please enable R2 through the Cloudflare Dashboard." Do not enable the
 Actions backends until private R2 storage and scoped dispatch tokens are configured.
 
 ## Deploy the application integration
 
 Use the existing application deployment process after configuring real storage,
-app and media origins. Apply db/pipeline-migrations/20261001_github_media.sql once
-for an existing database, then 20261002_github_downloads.sql. Fresh databases need
+app and media origins. The current deployed database has already received 20261001_github_media.sql and
+20261002_github_downloads.sql; do not reapply their ALTER statements. For other
+existing databases, apply each migration once. Fresh databases need
 db/schema.sql and the existing pipeline migrations in sequence.
 
 Configure MEDIA_BUCKET as a private R2 bucket. Keep direct bucket public access off.
@@ -32,8 +36,8 @@ app Worker origin and both repositories' MEDIA_WORKER_ORIGIN Actions variable.
 Set the application's GITHUB_MEDIA_TOKEN and GITHUB_DOWNLOAD_TOKEN as Worker
 secrets. Use fine-grained GitHub tokens with Actions read/write access limited to
 the corresponding repository, and expiry dates. Do not reuse a local Git credential
-or paste tokens into repository files. Configure JWT_SECRET and MEDIA_JOB_SECRET
-using the normal application secret provisioning process.
+or paste tokens into repository files. JWT_SECRET and MEDIA_JOB_SECRET have already been provisioned for the deployed
+app; preserve them when updating.
 
 wrangler.toml includes the verified repository IDs and branch/workflow settings.
 Switch DOWNLOAD_BACKEND and MEDIA_TRANSCODE_BACKEND from runtime to github only
