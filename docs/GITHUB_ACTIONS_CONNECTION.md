@@ -9,9 +9,13 @@ https://animezak-app.85amiaksahib.workers.dev
 
 ## Current deployment blockers
 
+GitHub rejected workflow dispatch for both repositories with HTTP 422:
+"Actions has been disabled for this user." The account owner must restore Actions
+availability before hosted jobs or validation can run. No hosted run was started.
+
 The existing Worker has ASSETS, DB and DOWNLOADER bindings. It has no MEDIA_BUCKET
 binding and no configured application signing or media-job secrets. The available
-Cloudflare OAuth connection cannot list R2 buckets (HTTP 403). Do not enable the
+Cloudflare API returns HTTP 403, code 10042: "Please enable R2 through the Cloudflare Dashboard." Do not enable the
 Actions backends until private R2 storage and scoped dispatch tokens are configured.
 
 ## Deploy the application integration
